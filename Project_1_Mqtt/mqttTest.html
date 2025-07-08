@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>MQTT数据监控仪表盘</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+	<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#165DFF',
+						secondary: '#36D399',
+						warning: '#F87272',
+						dark: '#1E293B',
+						light: '#F8FAFC'
+					},
+					fontFamily: {
+						inter: ['Inter', 'system-ui', 'sans-serif'],
+					},
+				}
+			}
+		}
+	</script>
+	<style type="text/tailwindcss">
+		@layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-shadow {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+            .transition-all-300 {
+                transition: all 300ms ease-in-out;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-inter text-dark min-h-screen">
+	<div class="container mx-auto px-4 py-8 max-w-6xl">
+		<header class="mb-8">
+			<h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary flex items-center">
+				<i class="fa fa-line-chart mr-3"></i>MQTT数据监控仪表盘
+				<span id="connection-status" class="ml-4 text-sm px-3 py-1 rounded-full bg-gray-200">
+					<i class="fa fa-circle-o mr-1"></i>未连接
+				</span>
+			</h1>
+			<p class="text-gray-600 mt-2">实时监控环境数据并可视化展示</p>
+		</header>
+
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+			<!-- 温度卡片 -->
+			<div
+				class="bg-white rounded-xl p-6 card-shadow transition-all-300 hover:shadow-lg border-l-4 border-primary">
+				<div class="flex justify-between items-start mb-4">
+					<div>
+						<h3 class="text-gray-500 font-medium">温度</h3>
+						<p id="wenduNode" class="text-3xl font-bold">--</p>
+					</div>
+					<div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+						<i class="fa fa-thermometer-half text-primary text-xl"></i>
+					</div>
+				</div>
+				<div class="h-16">
+					<div id="temp-trend" class="w-full h-full"></div>
+				</div>
+			</div>
+
+			<!-- 湿度卡片 -->
+			<div
+				class="bg-white rounded-xl p-6 card-shadow transition-all-300 hover:shadow-lg border-l-4 border-secondary">
+				<div class="flex justify-between items-start mb-4">
+					<div>
+						<h3 class="text-gray-500 font-medium">湿度</h3>
+						<p id="shiduNode" class="text-3xl font-bold">--</p>
+					</div>
+					<div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+						<i class="fa fa-tint text-secondary text-xl"></i>
+					</div>
+				</div>
+				<div class="h-16">
+					<div id="humidity-trend" class="w-full h-full"></div>
+				</div>
+			</div>
+
+			<!-- 噪音卡片 -->
+			<div
+				class="bg-white rounded-xl p-6 card-shadow transition-all-300 hover:shadow-lg border-l-4 border-warning relative">
+				<div class="flex justify-between items-start mb-4">
+					<div>
+						<h3 class="text-gray-500 font-medium">噪音</h3>
+						<p id="zaoyinNode" class="text-3xl font-bold">--</p>
+					</div>
+					<div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+						<i class="fa fa-volume-up text-warning text-xl"></i>
+					</div>
+				</div>
+				<div id="alertMessage"
+					class="hidden absolute top-4 right-4 bg-warning text-white text-xs px-2 py-1 rounded-full">
+					<i class="fa fa-exclamation-circle mr-1"></i>噪音过高
+				</div>
+				<div class="h-16">
+					<div id="noise-trend" class="w-full h-full"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-1 gap-6">
+			<div class="bg-white rounded-xl p-6 card-shadow">
+				<h3 class="text-lg font-semibold mb-4 flex items-center">
+					<i class="fa fa-area-chart mr-2 text-primary"></i>环境数据趋势分析
+				</h3>
+				<div class="h-[300px]">
+					<div id="main-chart" class="w-full h-full"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 噪音阈值设置
+		const noiseThreshold = 60;
+
+		// 初始化图表
+		const tempTrendChart = echarts.init(document.getElementById('temp-trend'));
+		const humidityTrendChart = echarts.init(document.getElementById('humidity-trend'));
+		const noiseTrendChart = echarts.init(document.getElementById('noise-trend'));
+		const mainChart = echarts.init(document.getElementById('main-chart'));
+
+		// 图表配置
+		const lineChartOptions = {
+			xAxis: { type: 'category', boundaryGap: false, data: [] },
+			yAxis: { show: false },
+			series: [{
+				data: [],
+				type: 'line',
+				smooth: true,
+				lineStyle: { width: 2 },
+				areaStyle: { opacity: 0.3 }
+			}],
+			grid: { left: 0, right: 0, top: 0, bottom: 0 },
+			tooltip: { trigger: 'axis' },
+			animation: false
+		};
+
+		const tempOptions = JSON.parse(JSON.stringify(lineChartOptions));
+		tempOptions.series[0].lineStyle.color = '#165DFF';
+		tempOptions.series[0].areaStyle.color = {
+			type: 'linear',
+			x: 0, y: 0, x2: 0, y2: 1,
+			colorStops: [{
+				offset: 0, color: 'rgba(22, 93, 255, 0.5)'
+			}, {
+				offset: 1, color: 'rgba(22, 93, 255, 0)'
+			}]
+		};
+		tempTrendChart.setOption(tempOptions);
+
+		const humidityOptions = JSON.parse(JSON.stringify(lineChartOptions));
+		humidityOptions.series[0].lineStyle.color = '#36D399';
+		humidityOptions.series[0].areaStyle.color = {
+			type: 'linear',
+			x: 0, y: 0, x2: 0, y2: 1,
+			colorStops: [{
+				offset: 0, color: 'rgba(54, 211, 153, 0.5)'
+			}, {
+				offset: 1, color: 'rgba(54, 211, 153, 0)'
+			}]
+		};
+		humidityTrendChart.setOption(humidityOptions);
+
+		const noiseOptions = JSON.parse(JSON.stringify(lineChartOptions));
+		noiseOptions.series[0].lineStyle.color = '#F87272';
+		noiseOptions.series[0].areaStyle.color = {
+			type: 'linear',
+			x: 0, y: 0, x2: 0, y2: 1,
+			colorStops: [{
+				offset: 0, color: 'rgba(248, 114, 114, 0.5)'
+			}, {
+				offset: 1, color: 'rgba(248, 114, 114, 0)'
+			}]
+		};
+
+		// 添加阈值线
+		noiseOptions.yAxis = {
+			show: true,
+			min: 0,
+			max: 100,
+			splitLine: { show: false },
+			axisLine: { show: false },
+			axisTick: { show: false },
+			axisLabel: { show: false }
+		};
+		noiseOptions.series[0].markLine = {
+			symbol: 'none',
+			data: [
+				{
+					yAxis: noiseThreshold,
+					lineStyle: {
+						color: '#F87272',
+						type: 'dashed'
+					},
+					label: {
+						show: true,
+						position: 'end',
+						formatter: `阈值: ${noiseThreshold}dB`
+					}
+				}
+			]
+		};
+		noiseOptions.series[0].itemStyle = {
+			color: function (params) {
+				return params.data >= noiseThreshold ? '#F87272' : '#94a3b8';
+			}
+		};
+		noiseOptions.series[0].symbol = 'circle';
+		noiseOptions.series[0].symbolSize = 6;
+		noiseTrendChart.setOption(noiseOptions);
+
+		// 主图表配置
+		const mainChartOptions = {
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'cross',
+					crossStyle: {
+						color: '#999'
+					}
+				}
+			},
+			legend: {
+				data: ['温度 (°C)', '湿度 (%)', '噪音 (dB)']
+			},
+			xAxis: {
+				type: 'category',
+				boundaryGap: false,
+				data: []
+			},
+			yAxis: [
+				{
+					type: 'value',
+					name: '温度/湿度',
+					min: 0,
+					max: 100,
+					interval: 20,
+					axisLabel: {
+						formatter: '{value}'
+					}
+				},
+				{
+					type: 'value',
+					name: '噪音',
+					min: 0,
+					max: 100,
+					interval: 20,
+					axisLabel: {
+						formatter: '{value} dB'
+					},
+					splitLine: {
+						show: false
+					}
+				}
+			],
+			series: [
+				{
+					name: '温度 (°C)',
+					type: 'line',
+					data: [],
+					yAxisIndex: 0,
+					itemStyle: { color: '#165DFF' },
+					lineStyle: { width: 2 }
+				},
+				{
+					name: '湿度 (%)',
+					type: 'line',
+					data: [],
+					yAxisIndex: 0,
+					itemStyle: { color: '#36D399' },
+					lineStyle: { width: 2 }
+				},
+				{
+					name: '噪音 (dB)',
+					type: 'line',
+					data: [],
+					yAxisIndex: 1,
+					lineStyle: { width: 2 },
+					itemStyle: {
+						color: function (params) {
+							return params.data >= noiseThreshold ? '#F87272' : '#94a3b8';
+						}
+					},
+					symbol: 'circle',
+					symbolSize: 6
+				}
+			],
+			animation: false
+		};
+
+		// 为主图表添加噪音阈值线
+		mainChartOptions.series[2].markLine = {
+			symbol: 'none',
+			data: [
+				{
+					yAxis: noiseThreshold,
+					lineStyle: {
+						color: '#F87272',
+						type: 'dashed'
+					},
+					label: {
+						show: true,
+						position: 'end',
+						formatter: `阈值: ${noiseThreshold}dB`
+					}
+				}
+			]
+		};
+		mainChart.setOption(mainChartOptions);
+
+		// 数据存储
+		const maxDataPoints = 20;
+		const timeData = [];
+		const tempData = [];
+		const humidityData = [];
+		const noiseData = [];
+
+		// 更新数据函数
+		function updateData(id, value) {
+			document.getElementById(id).innerHTML = value;
+		}
+
+		// 更新图表函数
+		function updateCharts(timestamp, temperature, humidity, noise) {
+			// 添加时间戳
+			timeData.push(timestamp);
+			if (timeData.length > maxDataPoints) {
+				timeData.shift();
+			}
+
+			// 添加温度数据
+			tempData.push(temperature);
+			if (tempData.length > maxDataPoints) {
+				tempData.shift();
+			}
+
+			// 添加湿度数据
+			humidityData.push(humidity);
+			if (humidityData.length > maxDataPoints) {
+				humidityData.shift();
+			}
+
+			// 添加噪音数据
+			noiseData.push(noise);
+			if (noiseData.length > maxDataPoints) {
+				noiseData.shift();
+			}
+
+			// 更新迷你图表
+			tempOptions.xAxis.data = timeData;
+			tempOptions.series[0].data = tempData;
+			tempTrendChart.setOption(tempOptions);
+
+			humidityOptions.xAxis.data = timeData;
+			humidityOptions.series[0].data = humidityData;
+			humidityTrendChart.setOption(humidityOptions);
+
+			noiseOptions.xAxis.data = timeData;
+			noiseOptions.series[0].data = noiseData;
+			noiseTrendChart.setOption(noiseOptions);
+
+			// 更新主图表
+			mainChartOptions.xAxis.data = timeData;
+			mainChartOptions.series[0].data = tempData;
+			mainChartOptions.series[1].data = humidityData;
+			mainChartOptions.series[2].data = noiseData;
+			mainChart.setOption(mainChartOptions);
+		}
+
+		// 响应窗口大小变化
+		window.addEventListener('resize', function () {
+			tempTrendChart.resize();
+			humidityTrendChart.resize();
+			noiseTrendChart.resize();
+			mainChart.resize();
+		});
+
+		// 连接MQTT服务器
+		const client = mqtt.connect("ws://192.168.0.110:8083/mqtt")
+
+		// 更新连接状态
+		const connectionStatus = document.getElementById('connection-status');
+		function updateConnectionStatus(status, isConnected) {
+			connectionStatus.innerHTML = isConnected ?
+				`<i class="fa fa-circle text-green-500 mr-1"></i>${status}` :
+				`<i class="fa fa-circle-o text-gray-500 mr-1"></i>${status}`;
+			connectionStatus.className = isConnected ?
+				'ml-4 text-sm px-3 py-1 rounded-full bg-green-100 text-green-800' :
+				'ml-4 text-sm px-3 py-1 rounded-full bg-gray-200';
+		}
+
+		// 连接成功
+		client.on("connect", () => {
+			updateConnectionStatus('已连接', true);
+			client.subscribe("MCGS_Msg");
+			client.publish("mcgs", "Dashboard connected!");
+		});
+
+		// 连接断开
+		client.on("close", () => {
+			updateConnectionStatus('已断开', false);
+		});
+
+		// 连接错误
+		client.on("error", (error) => {
+			console.error("MQTT连接错误:", error);
+			updateConnectionStatus('连接错误', false);
+		});
+
+		// 接收消息
+		client.on("message", (topic, payload) => {
+			try {
+				let msg = JSON.parse(payload.toString());
+				console.log("收到数据:", msg);
+
+				// 更新显示数据
+				updateData("wenduNode", msg.temperature.toFixed(2) + " ℃");
+				updateData("shiduNode", msg.humidity.toFixed(2) + " %");
+				updateData("zaoyinNode", msg.noise.toFixed(2) + " Db");
+
+				// 获取当前时间（只显示分:秒）
+				const now = new Date();
+				const timeStr = now.getMinutes().toString().padStart(2, '0') + ':' +
+					now.getSeconds().toString().padStart(2, '0');
+
+				// 更新图表
+				updateCharts(timeStr, msg.temperature, msg.humidity, msg.noise);
+
+				// 判断噪音是否超过阈值
+				const alertMessage = document.getElementById("alertMessage");
+				if (msg.noise > noiseThreshold) {
+					alertMessage.classList.remove('hidden');
+					alertMessage.classList.add('flex', 'items-center');
+				} else {
+					alertMessage.classList.add('hidden');
+					alertMessage.classList.remove('flex', 'items-center');
+				}
+			} catch (error) {
+				console.error("解析MQTT消息出错:", error);
+			}
+		});
+	</script>
+</body>
+
+</html>
