@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>roadmap-generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      #graph-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        background-color: #f5f5f5;
+        z-index: 10; /* 新增 */
+      }
+
+      .modal {
+        transition: opacity 0.3s ease;
+        z-index: 1000; /* 新增 */
+      }
+
+      #nodes-container {
+        position: absolute;
+        transform-origin: 0 0;
+      }
+
+      .node {
+        position: absolute;
+        cursor: move;
+        transition: opacity 0.2s;
+        z-index: 10;
+      }
+      .node {
+        user-select: none; /* 防止双击选中文本 */
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+
+      /* 确保节点内容也不可选中 */
+      .node * {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+
+      .node:hover {
+        opacity: 1 !important;
+        z-index: 20;
+      }
+
+      .node-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      #edges-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      .edge {
+        pointer-events: visibleStroke;
+        transition: all 0.2s;
+      }
+
+      .edge:hover {
+        stroke: #3b82f6;
+        stroke-width: 3;
+      }
+
+      .edge.selected {
+        stroke: #ef4444;
+        stroke-width: 3;
+      }
+
+      .drag-handle {
+        cursor: move;
+      }
+
+      .drop-zone {
+        border: 2px dashed #ccc;
+        border-radius: 6px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s;
+      }
+
+      .drop-zone.active {
+        border-color: #3b82f6;
+        background-color: #ebf5ff;
+      }
+
+      .modal {
+        transition: opacity 0.3s ease;
+      }
+
+      .modal-content {
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .node-toolbar {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        display: none;
+        z-index: 30;
+      }
+
+      .node:hover .node-toolbar {
+        display: flex;
+      }
+
+      /* 节点详情模态框样式 */
+      #node-detail-modal .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      #node-properties input {
+        min-width: 0;
+      }
+
+      .remove-property {
+        transition: all 0.2s;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-6">
+      <h1 class="text-3xl font-bold text-center mb-6">roadmap-generator</h1>
+
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- 左侧控制面板 -->
+        <div class="lg:col-span-1 bg-white rounded-lg shadow p-4">
+          <h2 class="text-xl font-semibold mb-4">控制面板</h2>
+
+          <!-- 图片文件夹上传 -->
+          <div class="mb-6">
+            <h3 class="text-lg font-medium mb-2">1. 上传图片文件夹</h3>
+            <div id="image-folder-drop" class="drop-zone">
+              <div class="flex flex-col items-center justify-center">
+                <i class="fas fa-folder-open text-4xl text-gray-400 mb-2"></i>
+                <p class="text-sm text-gray-600">拖拽或点击上传图片文件夹</p>
+                <p class="text-xs text-gray-500 mt-1">包含图片和索引JSON</p>
+              </div>
+              <input
+                type="file"
+                id="image-folder-input"
+                webkitdirectory
+                directory
+                multiple
+                class="hidden"
+              />
+            </div>
+            <div
+              id="image-folder-status"
+              class="text-sm text-gray-600 mt-2"
+            ></div>
+          </div>
+
+          <!-- JSON数据上传 -->
+          <div class="mb-6">
+            <h3 class="text-lg font-medium mb-2">2. 上传JSON数据</h3>
+            <div id="json-drop" class="drop-zone">
+              <div class="flex flex-col items-center justify-center">
+                <i class="fas fa-file-import text-4xl text-gray-400 mb-2"></i>
+                <p class="text-sm text-gray-600">拖拽或点击上传data.json</p>
+                <p class="text-xs text-gray-500 mt-1">包含节点信息</p>
+              </div>
+              <input
+                type="file"
+                id="json-input"
+                accept=".json"
+                class="hidden"
+              />
+            </div>
+            <div id="json-status" class="text-sm text-gray-600 mt-2"></div>
+          </div>
+
+          <!-- 可添加节点列表 -->
+          <div class="mb-6">
+            <h3 class="text-lg font-medium mb-2">3. 可添加节点</h3>
+            <div
+              id="available-nodes"
+              class="max-h-60 overflow-y-auto border rounded p-2"
+            >
+              <p class="text-sm text-gray-500 text-center py-4">
+                请先上传JSON数据
+              </p>
+            </div>
+          </div>
+
+          <!-- 画布控制 -->
+          <div class="mb-6">
+            <h3 class="text-lg font-medium mb-2">画布控制</h3>
+            <div class="flex space-x-2">
+              <button
+                id="zoom-in"
+                class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+              >
+                <i class="fas fa-search-plus mr-2"></i>放大
+              </button>
+              <button
+                id="zoom-out"
+                class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+              >
+                <i class="fas fa-search-minus mr-2"></i>缩小
+              </button>
+              <button
+                id="reset-view"
+                class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
+              >
+                <i class="fas fa-sync-alt mr-2"></i>重置
+              </button>
+            </div>
+          </div>
+
+          <!-- 删除模式切换 -->
+          <div class="mb-4">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="delete-mode" class="sr-only peer" />
+              <div
+                class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"
+              ></div>
+              <span class="ms-3 text-sm font-medium text-gray-900"
+                >删除模式</span
+              >
+            </label>
+            <p class="text-xs text-gray-500 mt-1">开启后点击节点或边可删除</p>
+          </div>
+
+          <!-- 在导出数据按钮上方添加导入按钮 -->
+          <div class="mb-4">
+            <button
+              id="import-data"
+              class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded"
+            >
+              <i class="fas fa-file-import mr-2"></i>导入数据
+            </button>
+          </div>
+
+          <!-- 导出数据 -->
+          <div>
+            <button
+              id="export-data"
+              class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+            >
+              <i class="fas fa-file-export mr-2"></i>导出数据
+            </button>
+          </div>
+        </div>
+
+        <!-- 在导出模态框后面添加节点详情模态框 -->
+        <div
+          id="node-detail-modal"
+          class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden"
+        >
+          <div
+            class="bg-white rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 modal-content"
+          >
+            <div class="p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">节点详情</h3>
+                <button
+                  id="close-node-modal"
+                  class="text-gray-500 hover:text-gray-700"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+
+              <div class="mb-4">
+                <div
+                  class="w-full h-48 bg-gray-200 rounded-md overflow-hidden mb-4"
+                >
+                  <img
+                    id="node-detail-image"
+                    src=""
+                    alt="节点图片"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >标题</label
+                  >
+                  <input
+                    id="node-title"
+                    type="text"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >属性列表</label
+                  >
+                  <div id="node-properties" class="space-y-2 mb-2">
+                    <!-- 动态生成的属性列表 -->
+                  </div>
+                  <button
+                    id="add-property"
+                    class="text-blue-500 hover:text-blue-700 text-sm"
+                  >
+                    <i class="fas fa-plus mr-1"></i>添加属性
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex justify-end space-x-2">
+                <button
+                  id="save-node"
+                  class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+                >
+                  保存
+                </button>
+                <button
+                  id="cancel-node"
+                  class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 主画布区域 -->
+        <div class="lg:col-span-3 bg-white rounded-lg shadow overflow-hidden">
+          <div id="graph-container">
+            <div id="nodes-container"></div>
+            <svg id="edges-container"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据导出模态框 -->
+    <div
+      id="export-modal"
+      class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-2/3 modal-content"
+      >
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">导出数据</h3>
+            <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <div class="mb-4">
+            <div class="flex space-x-2 mb-2">
+              <button
+                id="copy-nodes"
+                class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm"
+              >
+                <i class="fas fa-copy mr-1"></i>复制节点
+              </button>
+              <button
+                id="copy-edges"
+                class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm"
+              >
+                <i class="fas fa-copy mr-1"></i>复制边
+              </button>
+              <button
+                id="copy-all"
+                class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm"
+              >
+                <i class="fas fa-copy mr-1"></i>复制全部
+              </button>
+              <button
+                id="download-json"
+                class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm"
+              >
+                <i class="fas fa-download mr-1"></i>下载JSON
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="font-medium mb-2">节点数据</h4>
+              <pre
+                id="nodes-data"
+                class="bg-gray-100 p-3 rounded text-sm overflow-auto max-h-64"
+              ></pre>
+            </div>
+            <div>
+              <h4 class="font-medium mb-2">边数据</h4>
+              <pre
+                id="edges-data"
+                class="bg-gray-100 p-3 rounded text-sm overflow-auto max-h-64"
+              ></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // 系统状态
+        const state = {
+          scale: 1,
+          offsetX: 0,
+          offsetY: 0,
+          startX: 0,
+          startY: 0,
+          isDragging: false,
+          isPanning: false,
+          selectedNodeId: null,
+          nodes: [],
+          edges: [],
+          imageMap: {},
+          availableNodes: [],
+          nextNodeId: 1,
+          nextEdgeId: 1,
+          deleteMode: false,
+          uploadedImages: {},
+          selectedEdgeId: null,
+          editingNode: null,
+        };
+
+        // DOM元素
+        const elements = {
+          graphContainer: document.getElementById("graph-container"),
+          nodesContainer: document.getElementById("nodes-container"),
+          edgesContainer: document.getElementById("edges-container"),
+          imageFolderDrop: document.getElementById("image-folder-drop"),
+          imageFolderInput: document.getElementById("image-folder-input"),
+          imageFolderStatus: document.getElementById("image-folder-status"),
+          jsonDrop: document.getElementById("json-drop"),
+          jsonInput: document.getElementById("json-input"),
+          jsonStatus: document.getElementById("json-status"),
+          availableNodes: document.getElementById("available-nodes"),
+          zoomIn: document.getElementById("zoom-in"),
+          zoomOut: document.getElementById("zoom-out"),
+          resetView: document.getElementById("reset-view"),
+          exportData: document.getElementById("export-data"),
+          exportModal: document.getElementById("export-modal"),
+          closeModal: document.getElementById("close-modal"),
+          copyNodes: document.getElementById("copy-nodes"),
+          copyEdges: document.getElementById("copy-edges"),
+          copyAll: document.getElementById("copy-all"),
+          downloadJson: document.getElementById("download-json"),
+          nodesData: document.getElementById("nodes-data"),
+          edgesData: document.getElementById("edges-data"),
+          deleteModeToggle: document.getElementById("delete-mode"),
+          importData: document.getElementById("import-data"),
+        };
+
+        // 初始化事件监听
+        function initEventListeners() {
+          // 图片文件夹上传
+          elements.imageFolderDrop.addEventListener("click", () =>
+            elements.imageFolderInput.click()
+          );
+          elements.imageFolderInput.addEventListener(
+            "change",
+            handleImageFolderUpload
+          );
+
+          // JSON数据上传
+          elements.jsonDrop.addEventListener("click", () =>
+            elements.jsonInput.click()
+          );
+          elements.jsonInput.addEventListener("change", handleJsonUpload);
+
+          // 拖放事件
+          setupDropZone(elements.imageFolderDrop, handleImageFolderUpload);
+          setupDropZone(elements.jsonDrop, handleJsonUpload);
+
+          // 画布控制
+          elements.zoomIn.addEventListener("click", () => zoomGraph(1.2));
+          elements.zoomOut.addEventListener("click", () => zoomGraph(0.8));
+          elements.resetView.addEventListener("click", resetView);
+
+          // 画布交互
+          elements.graphContainer.addEventListener("mousedown", startPan);
+          document.addEventListener("mousemove", handlePan);
+          document.addEventListener("mouseup", endPan);
+          elements.graphContainer.addEventListener("wheel", handleWheel, {
+            passive: false,
+          });
+
+          // 删除模式切换
+          elements.deleteModeToggle.addEventListener("change", function () {
+            state.deleteMode = this.checked;
+            if (state.deleteMode) {
+              // 取消任何选中的节点
+              if (state.selectedNodeId) {
+                document.getElementById(state.selectedNodeId).style.boxShadow =
+                  "";
+                state.selectedNodeId = null;
+              }
+              // 取消任何选中的边
+              if (state.selectedEdgeId) {
+                document
+                  .getElementById(state.selectedEdgeId)
+                  .classList.remove("selected");
+                state.selectedEdgeId = null;
+              }
+            }
+          });
+
+          // 节点详情模态框事件
+          document
+            .getElementById("close-node-modal")
+            .addEventListener("click", () => {
+              document
+                .getElementById("node-detail-modal")
+                .classList.add("hidden");
+            });
+
+          document
+            .getElementById("cancel-node")
+            .addEventListener("click", () => {
+              document
+                .getElementById("node-detail-modal")
+                .classList.add("hidden");
+            });
+
+          document
+            .getElementById("save-node")
+            .addEventListener("click", saveNodeChanges);
+
+          document
+            .getElementById("add-property")
+            .addEventListener("click", addPropertyField);
+
+          // 点击模态框外部关闭
+          document
+            .getElementById("node-detail-modal")
+            .addEventListener("click", (e) => {
+              if (e.target === document.getElementById("node-detail-modal")) {
+                document
+                  .getElementById("node-detail-modal")
+                  .classList.add("hidden");
+              }
+            });
+
+          // 导入数据
+          elements.importData.addEventListener("click", () => {
+            // 创建一个隐藏的文件输入元素
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = ".json";
+
+            input.onchange = (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                try {
+                  const data = JSON.parse(e.target.result);
+                  importGraphData(data);
+                } catch (error) {
+                  alert("导入失败: 文件格式不正确");
+                  console.error(error);
+                }
+              };
+              reader.readAsText(file);
+            };
+
+            input.click();
+          });
+
+          // 导出数据
+          elements.exportData.addEventListener("click", showExportModal);
+          elements.closeModal.addEventListener("click", () =>
+            elements.exportModal.classList.add("hidden")
+          );
+          elements.copyNodes.addEventListener("click", copyNodesData);
+          elements.copyEdges.addEventListener("click", copyEdgesData);
+          elements.copyAll.addEventListener("click", copyAllData);
+          elements.downloadJson.addEventListener("click", downloadJsonData);
+
+          // 点击模态框外部关闭
+          elements.exportModal.addEventListener("click", (e) => {
+            if (e.target === elements.exportModal) {
+              elements.exportModal.classList.add("hidden");
+            }
+          });
+        }
+
+        // 添加属性字段
+        function addPropertyField(value = "", index = null) {
+          const propertiesContainer =
+            document.getElementById("node-properties");
+          const propertyId =
+            index !== null ? `property-${index}` : `property-${Date.now()}`;
+
+          const propertyDiv = document.createElement("div");
+          propertyDiv.className = "flex items-center";
+          propertyDiv.innerHTML = `
+        <input type="text" value="${value}" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
+        <button class="remove-property ml-2 text-red-500 hover:text-red-700 p-1" data-id="${propertyId}">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+
+          propertyDiv.id = propertyId;
+          propertiesContainer.appendChild(propertyDiv);
+
+          // 添加删除按钮事件
+          propertyDiv
+            .querySelector(".remove-property")
+            .addEventListener("click", (e) => {
+              e.preventDefault();
+              propertyDiv.remove();
+            });
+        }
+
+        // 保存节点修改
+        function saveNodeChanges() {
+          if (!state.editingNode) return;
+
+          const node = state.editingNode;
+
+          // 更新标题
+          node.data.content.title = document.getElementById("node-title").value;
+
+          // 更新属性列表
+          node.data.content.list = [];
+          document
+            .querySelectorAll("#node-properties input")
+            .forEach((input) => {
+              if (input.value.trim()) {
+                node.data.content.list.push(input.value.trim());
+              }
+            });
+
+          // 重新渲染节点
+          const nodeElement = document.getElementById(node.id);
+          if (nodeElement) {
+            // 更新图片部分
+            const imgContainer = nodeElement.querySelector(".w-full.h-32");
+            if (imgContainer) {
+              imgContainer.innerHTML = node.data.imgUrl
+                ? `<img src="${node.data.imgUrl}" alt="${node.data.content.title}" class="w-full h-full object-cover">`
+                : '<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image text-4xl"></i></div>';
+            }
+
+            // 更新标题和属性
+            const titleElement = nodeElement.querySelector("h3");
+            if (titleElement)
+              titleElement.textContent = node.data.content.title;
+
+            const listElement = nodeElement.querySelector("ul");
+            if (listElement) {
+              listElement.innerHTML = node.data.content.list
+                .map((item) => `<li>${item}</li>`)
+                .join("");
+            }
+          }
+
+          // 关闭模态框
+          document.getElementById("node-detail-modal").classList.add("hidden");
+        }
+
+        // 修改后的importGraphData函数
+        function importGraphData(data) {
+          if (!data.nodes || !data.edges) {
+            alert("导入失败: 数据格式不正确");
+            return;
+          }
+
+          // 检查是否已上传图片和JSON数据
+          if (
+            Object.keys(state.uploadedImages).length === 0 ||
+            state.availableNodes.length === 0
+          ) {
+            alert("请先上传图片文件夹和对应的data.json文件");
+            return;
+          }
+
+          // 清除现有图形
+          clearGraph();
+
+          // 导入节点
+          data.nodes.forEach((node) => {
+            // 查找原始数据
+            const originalData = findOriginalData(node.data.originalData);
+            if (!originalData) {
+              console.warn("找不到匹配的原始数据:", node.data.originalData);
+              return;
+            }
+
+            // 获取图片URL - 处理文件名格式
+            let imgUrl = "";
+            if (node.data.imgUrl) {
+              if (node.data.imgUrl.startsWith("blob:")) {
+                // 如果是Blob URL，使用原始数据中的图片
+                imgUrl = getImageUrl(originalData);
+              } else if (
+                node.data.imgUrl.endsWith(".png") ||
+                node.data.imgUrl.endsWith(".jpg")
+              ) {
+                // 如果是文件名，从上传的图片中查找
+                const fileName = node.data.imgUrl.split(".")[0];
+                imgUrl =
+                  state.uploadedImages[fileName] || originalData.pic || "";
+              } else {
+                // 其他情况（可能是完整URL）
+                imgUrl = node.data.imgUrl;
+              }
+            } else {
+              // 没有imgUrl，使用原始数据中的图片
+              imgUrl = getImageUrl(originalData);
+            }
+
+            // 创建新节点
+            const newNode = {
+              id: node.id,
+              position: node.position,
+              data: {
+                content: node.data.content,
+                imgUrl: imgUrl,
+                originalData: originalData,
+              },
+              type: node.type || "learningGraph",
+            };
+
+            // 更新下一个可用ID
+            const nodeNum = parseInt(node.id.substring(1));
+            if (nodeNum >= state.nextNodeId) {
+              state.nextNodeId = nodeNum + 1;
+            }
+
+            state.nodes.push(newNode);
+            renderNode(newNode);
+          });
+
+          // 导入边（保持不变）
+          data.edges.forEach((edge) => {
+            const sourceExists = state.nodes.some((n) => n.id === edge.source);
+            const targetExists = state.nodes.some((n) => n.id === edge.target);
+
+            if (sourceExists && targetExists) {
+              const newEdge = {
+                id: edge.id,
+                source: edge.source,
+                target: edge.target,
+              };
+
+              const edgeNum = parseInt(edge.id.substring(1));
+              if (edgeNum >= state.nextEdgeId) {
+                state.nextEdgeId = edgeNum + 1;
+              }
+
+              state.edges.push(newEdge);
+              renderEdge(newEdge);
+            }
+          });
+
+          alert(
+            `成功导入 ${data.nodes.length} 个节点和 ${data.edges.length} 条边`
+          );
+        }
+
+        // 查找匹配的原始数据
+        function findOriginalData(originalData) {
+          if (!originalData) return null;
+
+          // 尝试通过aid匹配
+          if (originalData.aid) {
+            const found = state.availableNodes.find(
+              (node) => node.aid === originalData.aid
+            );
+            if (found) return found;
+          }
+
+          // 尝试通过title匹配
+          if (originalData.title) {
+            const found = state.availableNodes.find(
+              (node) => node.title === originalData.title
+            );
+            if (found) return found;
+          }
+
+          return null;
+        }
+
+        // 获取图片URL
+        function getImageUrl(nodeData) {
+          const aid = nodeData.aid ? nodeData.aid.toString() : null;
+          return aid && state.uploadedImages[aid]
+            ? state.uploadedImages[aid]
+            : nodeData.pic || "";
+        }
+
+        // 清除现有图形
+        function clearGraph() {
+          // 清除DOM元素
+          elements.nodesContainer.innerHTML = "";
+          elements.edgesContainer.innerHTML = "";
+
+          // 清除状态
+          state.nodes = [];
+          state.edges = [];
+          state.selectedNodeId = null;
+          state.selectedEdgeId = null;
+          state.nextNodeId = 1;
+          state.nextEdgeId = 1;
+
+          // 重置视图
+          resetView();
+        }
+
+        // 设置拖放区域
+        function setupDropZone(element, callback) {
+          element.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            element.classList.add("active");
+          });
+
+          element.addEventListener("dragleave", () => {
+            element.classList.remove("active");
+          });
+
+          element.addEventListener("drop", (e) => {
+            e.preventDefault();
+            element.classList.remove("active");
+
+            if (e.dataTransfer.files.length > 0) {
+              callback({ target: { files: e.dataTransfer.files } });
+            }
+          });
+        }
+
+        // 处理图片文件夹上传
+        function handleImageFolderUpload(event) {
+          const files = event.target.files;
+          if (!files || files.length === 0) return;
+
+          elements.imageFolderStatus.textContent = "正在处理图片...";
+
+          // 清空之前上传的图片
+          state.uploadedImages = {};
+
+          // 处理所有图片文件
+          Array.from(files).forEach((file) => {
+            if (file.type.startsWith("image/")) {
+              const fileName = file.name.split(".")[0];
+              state.uploadedImages[fileName] = URL.createObjectURL(file);
+            }
+          });
+
+          elements.imageFolderStatus.textContent = `成功加载 ${
+            Object.keys(state.uploadedImages).length
+          } 张图片`;
+        }
+
+        // 处理JSON数据上传
+        function handleJsonUpload(event) {
+          const file = event.target.files[0];
+          if (!file) return;
+
+          elements.jsonStatus.textContent = "正在处理JSON数据...";
+
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            try {
+              const jsonData = JSON.parse(e.target.result);
+              state.availableNodes = Array.isArray(jsonData)
+                ? jsonData
+                : [jsonData];
+
+              // 更新可添加节点列表
+              updateAvailableNodesList();
+
+              elements.jsonStatus.textContent = `成功加载 ${state.availableNodes.length} 个节点数据`;
+            } catch (error) {
+              elements.jsonStatus.textContent = "错误: 解析JSON失败";
+              console.error(error);
+            }
+          };
+          reader.readAsText(file);
+        }
+
+        // 更新可添加节点列表
+        function updateAvailableNodesList() {
+          elements.availableNodes.innerHTML = "";
+
+          if (state.availableNodes.length === 0) {
+            elements.availableNodes.innerHTML =
+              '<p class="text-sm text-gray-500 text-center py-4">没有可用的节点</p>';
+            return;
+          }
+
+          state.availableNodes.forEach((nodeData, index) => {
+            const nodeElement = document.createElement("div");
+            nodeElement.className =
+              "flex items-center p-2 mb-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100";
+
+            // 尝试从上传的图片中查找匹配的图片
+            const aid = nodeData.aid ? nodeData.aid.toString() : null;
+            const imageUrl =
+              aid && state.uploadedImages[aid]
+                ? state.uploadedImages[aid]
+                : nodeData.pic;
+
+            nodeElement.innerHTML = `
+                        <div class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded overflow-hidden">
+                            ${
+                              imageUrl
+                                ? `<img src="${imageUrl}" alt="${nodeData.title}" class="w-full h-full object-cover">`
+                                : '<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image"></i></div>'
+                            }
+                        </div>
+                        <div class="ml-3 flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">${
+                              nodeData.title
+                            }</p>
+                            <p class="text-xs text-gray-500">${formatDuration(
+                              nodeData.duration
+                            )}</p>
+                        </div>
+                        <button class="add-node-btn ml-2 text-blue-500 hover:text-blue-700" data-index="${index}">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    `;
+
+            elements.availableNodes.appendChild(nodeElement);
+          });
+
+          // 添加节点按钮事件
+          document.querySelectorAll(".add-node-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const index = parseInt(btn.getAttribute("data-index"));
+              addNodeToCanvas(state.availableNodes[index]);
+            });
+          });
+        }
+
+        // 格式化时长
+        function formatDuration(seconds) {
+          if (!seconds) return "时长: 未知";
+          const mins = Math.floor(seconds / 60);
+          const secs = seconds % 60;
+          return `时长: ${mins}分${secs}秒`;
+        }
+
+        // 添加节点到画布
+        function addNodeToCanvas(nodeData) {
+          const nodeId = `n${state.nextNodeId++}`;
+          const position = {
+            x: Math.random() * 300 + 100,
+            y: Math.random() * 200 + 100,
+          };
+
+          // 尝试从上传的图片中查找匹配的图片
+          const aid = nodeData.aid ? nodeData.aid.toString() : null;
+          const imageUrl =
+            aid && state.uploadedImages[aid]
+              ? state.uploadedImages[aid]
+              : nodeData.pic;
+
+          const newNode = {
+            id: nodeId,
+            position: position,
+            data: {
+              content: {
+                title: nodeData.title,
+                list: [
+                  `观看量: ${
+                    nodeData.stat?.view
+                      ? nodeData.stat.view.toLocaleString()
+                      : "未知"
+                  }`,
+                  formatDuration(nodeData.duration),
+                ],
+              },
+              imgUrl: imageUrl || "",
+              originalData: nodeData,
+            },
+            type: "learningGraph",
+          };
+
+          state.nodes.push(newNode);
+          renderNode(newNode);
+        }
+
+        // 渲染节点
+        function renderNode(node) {
+          const nodeElement = document.createElement("div");
+          nodeElement.className =
+            "node bg-white rounded-md opacity-90 node-shadow";
+          nodeElement.id = node.id;
+          nodeElement.style.left = `${node.position.x}px`;
+          nodeElement.style.top = `${node.position.y}px`;
+          nodeElement.style.width = "200px";
+
+          // 获取正确的图片URL - 优先使用重新获取的URL
+          const imgUrl =
+            node.data.imgUrl ||
+            (node.data.originalData && getImageUrl(node.data.originalData)) ||
+            "";
+
+          nodeElement.innerHTML = `
+        <div class="relative">
+            <div class="node-toolbar">
+                <button class="delete-node-btn p-1 rounded-full bg-red-500 text-white hover:bg-red-600 mr-1" title="删除节点">
+                    <i class="fas fa-trash text-xs"></i>
+                </button>
+            </div>
+            <div class="drag-handle absolute top-1 right-1 p-1 rounded-full bg-white bg-opacity-70 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-arrows-alt"></i>
+            </div>
+            <div class="w-full h-32 bg-gray-200 rounded-t-md overflow-hidden">
+                ${
+                  imgUrl
+                    ? `<img src="${imgUrl}" alt="${node.data.content.title}" class="w-full h-full object-cover">`
+                    : '<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image text-4xl"></i></div>'
+                }
+            </div>
+            <div class="p-3">
+                <h3 class="text-sm font-medium text-gray-900 mb-1 truncate">${
+                  node.data.content.title
+                }</h3>
+                <ul class="text-xs text-gray-500 space-y-1">
+                    ${node.data.content.list
+                      .map((item) => `<li>${item}</li>`)
+                      .join("")}
+                </ul>
+            </div>
+        </div>
+    `;
+
+          // 添加节点点击事件
+          nodeElement.addEventListener("click", (e) => {
+            if (
+              e.target.closest(".drag-handle") ||
+              e.target.closest(".delete-node-btn")
+            )
+              return;
+
+            if (state.deleteMode) {
+              deleteNode(node.id);
+              return;
+            }
+
+            if (state.selectedNodeId) {
+              if (state.selectedNodeId !== node.id) {
+                // 创建边
+                createEdge(state.selectedNodeId, node.id);
+              }
+              // 取消选择
+              document
+                .querySelectorAll(".node")
+                .forEach((el) => (el.style.boxShadow = ""));
+              state.selectedNodeId = null;
+            } else {
+              // 选择节点（用于创建边）
+              state.selectedNodeId = node.id;
+              nodeElement.style.boxShadow = "0 0 0 2px #3b82f6";
+            }
+          });
+
+          // 添加双击事件处理
+          nodeElement.addEventListener("dblclick", (e) => {
+            e.stopPropagation();
+            if (state.deleteMode) return; // 删除模式下不响应双击
+
+            // 取消任何现有的节点选择（避免干扰边创建）
+            if (state.selectedNodeId) {
+              document
+                .querySelectorAll(".node")
+                .forEach((el) => (el.style.boxShadow = ""));
+              state.selectedNodeId = null;
+            }
+
+            // 显示节点详情
+            showNodeDetail(node);
+          });
+
+          // 添加删除按钮事件
+          const deleteBtn = nodeElement.querySelector(".delete-node-btn");
+          deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            deleteNode(node.id);
+          });
+
+          // 添加拖拽事件
+          const dragHandle = nodeElement.querySelector(".drag-handle");
+          dragHandle.addEventListener("mousedown", startDrag);
+
+          elements.nodesContainer.appendChild(nodeElement);
+        }
+
+        // 删除节点
+        function deleteNode(nodeId) {
+          if (confirm("确定要删除这个节点及其所有连接吗？")) {
+            // 删除与该节点相关的所有边
+            const edgesToRemove = state.edges.filter(
+              (edge) => edge.source === nodeId || edge.target === nodeId
+            );
+            edgesToRemove.forEach((edge) => {
+              const edgeElement = document.getElementById(edge.id);
+              if (edgeElement) {
+                edgeElement.remove();
+              }
+            });
+
+            state.edges = state.edges.filter(
+              (edge) => edge.source !== nodeId && edge.target !== nodeId
+            );
+
+            // 删除节点
+            state.nodes = state.nodes.filter((node) => node.id !== nodeId);
+
+            // 从DOM中移除节点
+            const nodeElement = document.getElementById(nodeId);
+            if (nodeElement) {
+              nodeElement.remove();
+            }
+
+            // 如果删除的是选中的节点，清除选中状态
+            if (state.selectedNodeId === nodeId) {
+              state.selectedNodeId = null;
+            }
+          }
+        }
+
+        // 显示节点详情
+        function showNodeDetail(node) {
+          // 清除任何现有的节点选择状态
+          if (state.selectedNodeId) {
+            document
+              .querySelectorAll(".node")
+              .forEach((el) => (el.style.boxShadow = ""));
+            state.selectedNodeId = null;
+          }
+
+          state.editingNode = node;
+
+          // 填充模态框内容
+          document.getElementById("node-detail-image").src =
+            node.data.imgUrl || "";
+          document.getElementById("node-title").value =
+            node.data.content.title || "";
+
+          // 填充属性列表
+          const propertiesContainer =
+            document.getElementById("node-properties");
+          propertiesContainer.innerHTML = "";
+
+          node.data.content.list.forEach((property, index) => {
+            addPropertyField(property, index);
+          });
+
+          // 显示模态框
+          document
+            .getElementById("node-detail-modal")
+            .classList.remove("hidden");
+        }
+
+        // 开始拖拽节点
+        function startDrag(e) {
+          if (state.deleteMode) return;
+
+          e.preventDefault();
+          e.stopPropagation();
+
+          const nodeElement = e.target.closest(".node");
+          if (!nodeElement) return;
+
+          const nodeId = nodeElement.id;
+          const node = state.nodes.find((n) => n.id === nodeId);
+          if (!node) return;
+
+          const transform = getComputedTransform();
+          const startX = e.clientX;
+          const startY = e.clientY;
+          const startLeft = node.position.x;
+          const startTop = node.position.y;
+
+          function handleMouseMove(e) {
+            const dx = (e.clientX - startX) / transform.scale;
+            const dy = (e.clientY - startY) / transform.scale;
+
+            const newLeft = startLeft + dx;
+            const newTop = startTop + dy;
+
+            nodeElement.style.left = `${newLeft}px`;
+            nodeElement.style.top = `${newTop}px`;
+
+            // 更新节点位置
+            node.position.x = newLeft;
+            node.position.y = newTop;
+
+            // 更新边位置
+            updateEdges();
+          }
+
+          function handleMouseUp() {
+            document.removeEventListener("mousemove", handleMouseMove);
+            document.removeEventListener("mouseup", handleMouseUp);
+          }
+
+          document.addEventListener("mousemove", handleMouseMove);
+          document.addEventListener("mouseup", handleMouseUp);
+        }
+
+        // 获取当前画布变换状态
+        function getComputedTransform() {
+          const style = window.getComputedStyle(elements.nodesContainer);
+          const transform = style.transform;
+
+          // 解析变换矩阵
+          let scale = 1;
+          let offsetX = 0;
+          let offsetY = 0;
+
+          if (transform && transform !== "none") {
+            const matrix = transform.match(/^matrix\((.+)\)$/);
+            if (matrix) {
+              const values = matrix[1].split(", ");
+              scale = parseFloat(values[0]); // 水平缩放
+              offsetX = parseFloat(values[4]); // 水平平移
+              offsetY = parseFloat(values[5]); // 垂直平移
+            }
+          }
+
+          return { scale, offsetX, offsetY };
+        }
+
+        // 创建边
+        function createEdge(sourceId, targetId) {
+          // 检查边是否已存在
+          const edgeExists = state.edges.some(
+            (edge) =>
+              (edge.source === sourceId && edge.target === targetId) ||
+              (edge.source === targetId && edge.target === sourceId)
+          );
+
+          if (edgeExists) return;
+
+          const newEdge = {
+            id: `e${state.nextEdgeId++}`,
+            source: sourceId,
+            target: targetId,
+          };
+
+          state.edges.push(newEdge);
+          renderEdge(newEdge);
+        }
+
+        // 渲染边
+        function renderEdge(edge) {
+          // 创建SVG路径
+          const path = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path"
+          );
+          path.id = edge.id;
+          path.className = "edge";
+          path.setAttribute("stroke", "#94a3b8");
+          path.setAttribute("stroke-width", "2");
+          path.setAttribute("fill", "none");
+          path.setAttribute("marker-end", "url(#arrowhead)");
+
+          // 添加点击事件
+          path.addEventListener("click", (e) => {
+            if (state.deleteMode) {
+              e.stopPropagation();
+
+              // 高亮选中的边
+              if (state.selectedEdgeId) {
+                document
+                  .getElementById(state.selectedEdgeId)
+                  .classList.remove("selected");
+              }
+              state.selectedEdgeId = edge.id;
+              path.classList.add("selected");
+
+              deleteEdge(edge.id);
+            }
+          });
+
+          elements.edgesContainer.appendChild(path);
+
+          // 更新边位置
+          updateEdges();
+
+          // 添加箭头标记定义（如果尚未添加）
+          if (!document.getElementById("arrowhead-def")) {
+            const defs = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "defs"
+            );
+            const marker = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "marker"
+            );
+            marker.id = "arrowhead";
+            marker.setAttribute("markerWidth", "10");
+            marker.setAttribute("markerHeight", "7");
+            marker.setAttribute("refX", "9");
+            marker.setAttribute("refY", "3.5");
+            marker.setAttribute("orient", "auto");
+
+            const arrow = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "polygon"
+            );
+            arrow.setAttribute("points", "0 0, 10 3.5, 0 7");
+            arrow.setAttribute("fill", "#94a3b8");
+
+            marker.appendChild(arrow);
+            defs.appendChild(marker);
+            elements.edgesContainer.appendChild(defs);
+          }
+        }
+
+        // 删除边
+        function deleteEdge(edgeId) {
+          if (confirm("确定要删除这条连接吗？")) {
+            state.edges = state.edges.filter((e) => e.id !== edgeId);
+
+            // 从DOM中移除边
+            const edgeElement = document.getElementById(edgeId);
+            if (edgeElement) {
+              edgeElement.remove();
+            }
+
+            // 清除选中状态
+            if (state.selectedEdgeId === edgeId) {
+              state.selectedEdgeId = null;
+            }
+          }
+        }
+
+        // 更新所有边的位置
+        function updateEdges() {
+          const transform = getComputedTransform();
+
+          state.edges.forEach((edge) => {
+            const path = document.getElementById(edge.id);
+            if (!path) return;
+
+            const sourceNode = state.nodes.find((n) => n.id === edge.source);
+            const targetNode = state.nodes.find((n) => n.id === edge.target);
+
+            if (!sourceNode || !targetNode) {
+              // 如果找不到源或目标节点，删除这条边
+              state.edges = state.edges.filter((e) => e.id !== edge.id);
+              path.remove();
+              return;
+            }
+
+            // 应用变换后的节点位置
+            const sourceX =
+              sourceNode.position.x * transform.scale + transform.offsetX;
+            const sourceY =
+              sourceNode.position.y * transform.scale + transform.offsetY;
+            const targetX =
+              targetNode.position.x * transform.scale + transform.offsetX;
+            const targetY =
+              targetNode.position.y * transform.scale + transform.offsetY;
+
+            // 计算控制点以创建曲线
+            const dx = targetX - sourceX;
+            const dy = targetY - sourceY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            // 偏移量使边弯曲
+            const offset = Math.min(100, dist / 2);
+
+            // 贝塞尔曲线控制点
+            const cp1x = sourceX + dx / 3;
+            const cp1y = sourceY + dy / 3 + offset;
+            const cp2x = targetX - dx / 3;
+            const cp2y = targetY - dy / 3 + offset;
+
+            // 创建路径数据
+            const pathData = `M${sourceX + 100},${sourceY + 60} C${
+              cp1x + 100
+            },${cp1y + 60} ${cp2x + 100},${cp2y + 60} ${targetX + 100},${
+              targetY + 60
+            }`;
+
+            path.setAttribute("d", pathData);
+          });
+        }
+
+        // 画布平移
+        function startPan(e) {
+          if (e.target === elements.graphContainer) {
+            state.isPanning = true;
+            state.startX = e.clientX - state.offsetX;
+            state.startY = e.clientY - state.offsetY;
+            elements.graphContainer.style.cursor = "grabbing";
+          }
+        }
+
+        function handlePan(e) {
+          if (!state.isPanning) return;
+
+          state.offsetX = e.clientX - state.startX;
+          state.offsetY = e.clientY - state.startY;
+
+          elements.nodesContainer.style.transform = `translate(${state.offsetX}px, ${state.offsetY}px) scale(${state.scale})`;
+
+          // 更新边位置
+          updateEdges();
+        }
+
+        function endPan() {
+          state.isPanning = false;
+          elements.graphContainer.style.cursor = "default";
+        }
+
+        // 画布缩放
+        function zoomGraph(factor) {
+          state.scale *= factor;
+          elements.nodesContainer.style.transform = `translate(${state.offsetX}px, ${state.offsetY}px) scale(${state.scale})`;
+
+          // 更新边位置
+          updateEdges();
+        }
+
+        function handleWheel(e) {
+          e.preventDefault();
+          const factor = e.deltaY < 0 ? 1.1 : 0.9;
+          zoomGraph(factor);
+        }
+
+        function resetView() {
+          state.scale = 1;
+          state.offsetX = 0;
+          state.offsetY = 0;
+          elements.nodesContainer.style.transform = `translate(0, 0) scale(1)`;
+
+          // 更新边位置
+          updateEdges();
+        }
+
+        // 导出数据
+        function showExportModal() {
+          // 准备节点数据 - 转换图片URL为文件名
+          const nodesData = state.nodes.map((node) => {
+            const nodeCopy = JSON.parse(JSON.stringify(node)); // 深拷贝
+
+            // 转换Blob URL为文件名
+            if (
+              nodeCopy.data.imgUrl &&
+              nodeCopy.data.imgUrl.startsWith("blob:")
+            ) {
+              // 从原始数据中获取aid作为文件名
+              const aid = nodeCopy.data.originalData?.aid;
+              if (aid) {
+                nodeCopy.data.imgUrl = `${aid}.png`; // 或根据实际文件扩展名调整
+              } else {
+                // 如果没有aid，保留原始图片URL（来自原始数据的pic字段）
+                nodeCopy.data.imgUrl = nodeCopy.data.originalData?.pic || "";
+              }
+            }
+
+            return {
+              id: nodeCopy.id,
+              position: nodeCopy.position,
+              data: nodeCopy.data,
+              type: nodeCopy.type,
+            };
+          });
+
+          // 准备边数据
+          const edgesData = state.edges.map((edge) => ({
+            id: edge.id,
+            source: edge.source,
+            target: edge.target,
+          }));
+
+          // 显示数据
+          elements.nodesData.textContent = JSON.stringify(nodesData, null, 2);
+          elements.edgesData.textContent = JSON.stringify(edgesData, null, 2);
+
+          // 显示模态框
+          elements.exportModal.classList.remove("hidden");
+        }
+
+        function copyNodesData() {
+          navigator.clipboard
+            .writeText(elements.nodesData.textContent)
+            .then(() => alert("节点数据已复制到剪贴板"))
+            .catch((err) => console.error("复制失败:", err));
+        }
+
+        function copyEdgesData() {
+          navigator.clipboard
+            .writeText(elements.edgesData.textContent)
+            .then(() => alert("边数据已复制到剪贴板"))
+            .catch((err) => console.error("复制失败:", err));
+        }
+
+        function copyAllData() {
+          const allData = {
+            nodes: JSON.parse(elements.nodesData.textContent),
+            edges: JSON.parse(elements.edgesData.textContent),
+          };
+
+          navigator.clipboard
+            .writeText(JSON.stringify(allData, null, 2))
+            .then(() => alert("全部数据已复制到剪贴板"))
+            .catch((err) => console.error("复制失败:", err));
+        }
+
+        function downloadJsonData() {
+          const allData = {
+            nodes: JSON.parse(elements.nodesData.textContent),
+            edges: JSON.parse(elements.edgesData.textContent),
+          };
+
+          const blob = new Blob([JSON.stringify(allData, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "graph-data.json";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+
+        // 初始化
+        initEventListeners();
+      });
+    </script>
+  </body>
+</html>

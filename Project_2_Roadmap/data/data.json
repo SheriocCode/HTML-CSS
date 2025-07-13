@@ -1,0 +1,740 @@
+[
+            {
+                "aid": 114248982202583,
+                "title": "全网首套鸿蒙5.0零基础入门到项目实战开发全套视频教程，原生鸿蒙正式版项目实战从ArkTS+AI到V2应用状态管理，鸿蒙API16应用开发全掌握",
+                "pubdate": 1743382800,
+                "ctime": 1743301976,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/96b7e10719f11251acf13786277033742101a6a7.jpg",
+                "duration": 37255,
+                "stat": {
+                    "view": 280310
+                },
+                "bvid": "BV1gSZvYzEdZ",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 909455342,
+                "title": "前端Web开发HTML5+CSS3+移动web视频教程，前端web入门首选黑马程序员",
+                "pubdate": 1680570000,
+                "ctime": 1680509834,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/84705cdc024a6c7ba5fdc86977e2e27e49a5685a.jpg",
+                "duration": 161220,
+                "stat": {
+                    "view": 3173589
+                },
+                "bvid": "BV1kM4y127Li",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 608534757,
+                "title": "黑马程序员前端JavaScript入门到精通全套视频教程，javascript核心进阶ES6语法、API、js高级等基础知识和实战教程",
+                "pubdate": 1675126800,
+                "ctime": 1675063549,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/7cbcf700e3950f40dab97b5e57c8581733fdad22.jpg",
+                "duration": 216624,
+                "stat": {
+                    "view": 6323058
+                },
+                "bvid": "BV1Y84y1L7Nn",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 486973949,
+                "title": "黑马程序员前端AJAX入门到实战全套教程，包含学前端框架必会的（ajax+node.js+webpack+git），一套全覆盖",
+                "pubdate": 1686099600,
+                "ctime": 1686021127,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/f1a8675f645e2ff65077f3ed05f806616d124c9c.jpg",
+                "duration": 96361,
+                "stat": {
+                    "view": 1068600
+                },
+                "bvid": "BV1MN411y7pw",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 663903365,
+                "title": "黑马程序员HarmonyOS4+NEXT星河版入门到企业级实战教程，一套精通鸿蒙应用开发",
+                "pubdate": 1701133200,
+                "ctime": 1701064724,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/df47d938b321a152d5ef8c325646f1f4bcee9c30.jpg",
+                "duration": 75870,
+                "stat": {
+                    "view": 958491
+                },
+                "bvid": "BV1Sa4y1Z7B1",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 870472773,
+                "title": "前端最新Vue2+Vue3基础入门到实战项目全套教程，自学前端vue就选黑马程序员，一套全通关！",
+                "pubdate": 1688435822,
+                "ctime": 1688366786,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/c0247f29a115368ed1d236126a8b0cae0dd1396e.jpg",
+                "duration": 185492,
+                "stat": {
+                    "view": 2897123
+                },
+                "bvid": "BV1HV4y1a7n4",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 235525051,
+                "title": "黑马程序员前端Vue项目《iHRM人力资源后台管理》全套教程，从vue基础模板开发到整体开发、nginx部署上线",
+                "pubdate": 1699318800,
+                "ctime": 1699252317,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/b0cc129899ad0bd57e293a14c41b4efc9e72db68.jpg",
+                "duration": 93624,
+                "stat": {
+                    "view": 253605
+                },
+                "bvid": "BV1Te411X7Wz",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 270893673,
+                "title": "黑马程序员前端Vue3小兔鲜电商项目实战，vue3全家桶从入门到实战电商项目一套通关",
+                "pubdate": 1683594000,
+                "ctime": 1683530269,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/35a291135895134255e9d94e8feebdd829b091a1.jpg",
+                "duration": 61445,
+                "stat": {
+                    "view": 973709
+                },
+                "bvid": "BV1Ac411K7EQ",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 807451085,
+                "title": "黑马程序员前端微信小程序开发教程，微信小程序从基础到发布全流程_企业级商城实战(含uni-app项目多端部署)",
+                "pubdate": 1639704611,
+                "ctime": 1639704612,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/47e6fca8a041a09fb6782d845e7588e56e4f922c.png",
+                "duration": 106604,
+                "stat": {
+                    "view": 5992390
+                },
+                "bvid": "BV1834y1676P",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 577161016,
+                "title": "黑马程序员前端React18入门到实战视频教程，从react+hooks核心基础到企业级项目开发实战（B站评论、极客园项目等）及大厂面试全通关",
+                "pubdate": 1697504400,
+                "ctime": 1697424134,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/b7e46b166914fcf4d388b0462740617b2c345f45.jpg",
+                "duration": 85691,
+                "stat": {
+                    "view": 890196
+                },
+                "bvid": "BV1ZB4y1Z7o8",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 956905560,
+                "title": "黑马程序员前端项目uniapp小兔鲜儿微信小程序项目视频教程，基于Vue3+Ts+Pinia+uni-app的最新组合技术栈开发的电商业务全流程",
+                "pubdate": 1691456400,
+                "ctime": 1691389665,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/beec8eb4ca1ec71f130c55a16691a5d6fde9f1e9.jpg",
+                "duration": 74660,
+                "stat": {
+                    "view": 823084
+                },
+                "bvid": "BV1Bp4y1379L",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 807488433,
+                "title": "黑马程序员Node.js全套入门教程，nodejs新教程含es6模块化+npm+express+webpack+promise等_Nodejs实战案例详解",
+                "pubdate": 1640136607,
+                "ctime": 1640136608,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/a35e28d321c55c783526b2382431409935ddfb9f.jpg",
+                "duration": 81280,
+                "stat": {
+                    "view": 2750036
+                },
+                "bvid": "BV1a34y167AZ",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 547086864,
+                "title": "黑马程序员Vue全套视频教程，从vue2.0到vue3.0一套全覆盖，前端学习核心框架教程",
+                "pubdate": 1628037908,
+                "ctime": 1627902097,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/2e20f95da4cbc6d4ec84ce24e01499973c7ebbd4.jpg",
+                "duration": 215867,
+                "stat": {
+                    "view": 3001193
+                },
+                "bvid": "BV1zq4y1p7ga",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 506678073,
+                "title": "前端开发入门教程，web前端零基础html5 +css3+前端项目视频教程",
+                "pubdate": 1637046590,
+                "ctime": 1637046590,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/bc53f6bab261c8d3e0742286e0f7314c5206ede2.jpg",
+                "duration": 98389,
+                "stat": {
+                    "view": 4208996
+                },
+                "bvid": "BV1Kg411T7t9",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 960566882,
+                "title": "黑马程序员前端面试必看视频教程（手写Promise+js设计模式+继承+函数柯里化等），10小时JavaScript面试全通关",
+                "pubdate": 1693875600,
+                "ctime": 1693799120,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/1df6a557052d8e8245bcc1eaf7ff652384c414a4.jpg",
+                "duration": 43242,
+                "stat": {
+                    "view": 118559
+                },
+                "bvid": "BV1mH4y1Q7Z7",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 74964956,
+                "title": "前端Html5+Css3+移动Web教程，前端Web入门教程，零基础前端开发视频教程",
+                "pubdate": 1573257634,
+                "ctime": 1573257638,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/550211a391881963c5faa530edaee43e5fe79b14.jpg",
+                "duration": 196528,
+                "stat": {
+                    "view": 1428098
+                },
+                "bvid": "BV1pE411q7FU",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 592248647,
+                "title": "黑马程序员web前端进阶教程，前端html5+css3+移动端项目实战（含华为新闻，b站移动端等）",
+                "pubdate": 1638840613,
+                "ctime": 1638840614,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/3d148a21219266c4447f01fb21bdc0092566e281.jpg",
+                "duration": 84922,
+                "stat": {
+                    "view": 777579
+                },
+                "bvid": "BV1xq4y1q7jZ",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 57708010,
+                "title": "黑马程序员JavaScript核心教程，前端基础教程，JS的DOM BOM操作教程",
+                "pubdate": 1562146386,
+                "ctime": 1562146386,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/cc6d736368f0fafd76533799b40357db7da1b55f.png",
+                "duration": 64354,
+                "stat": {
+                    "view": 1487684
+                },
+                "bvid": "BV1k4411w7sV",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 76249419,
+                "title": "黑马程序员vue前端基础教程-4个小时带你快速入门vue",
+                "pubdate": 1574145229,
+                "ctime": 1574145229,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/b21ca38b18fc4b564a5e3eb9b3c5ffef0d0c7899.png",
+                "duration": 13600,
+                "stat": {
+                    "view": 2625791
+                },
+                "bvid": "BV12J411m7MG",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 291663540,
+                "title": "前端HTML5+CSS3+移动Web全套教程，零基础学前端web就选黑马程序员",
+                "pubdate": 1626223510,
+                "ctime": 1626163633,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/d55d3b76008bbea133c05062b040fd8a6b6a12de.jpg",
+                "duration": 207642,
+                "stat": {
+                    "view": 500532
+                },
+                "bvid": "BV1cf4y1j7hL",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 15657082,
+                "title": "黑马程序员前端教程Ajax零基础入门ajax前后端交互技术",
+                "pubdate": 1508744654,
+                "ctime": 1508744656,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/5043b7b0177f66511f288c843a73cbb9f522f620.png",
+                "duration": 82775,
+                "stat": {
+                    "view": 410775
+                },
+                "bvid": "BV1ox411M7P2",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 40716170,
+                "title": "黑马程序员web前端基础教程_4天从零玩转jQuery",
+                "pubdate": 1547449528,
+                "ctime": 1547449528,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/8a90ebe500aee751cb59a39b4833beeabc0af54b.jpg",
+                "duration": 37174,
+                "stat": {
+                    "view": 534305
+                },
+                "bvid": "BV1pt411H7D6",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 57702342,
+                "title": "黑马程序员前端基础教程|jQuery网页开发案例精讲",
+                "pubdate": 1562143854,
+                "ctime": 1562143854,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/28c8ab7ca1be85178a289bc761d624d82d7a27ad.jpg",
+                "duration": 29205,
+                "stat": {
+                    "view": 396165
+                },
+                "bvid": "BV1a4411w7Gx",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 56979800,
+                "title": "黑马程序员JavaScript全套教程，Web前端必学的JS入门教程，零基础JavaScript入门",
+                "pubdate": 1561610576,
+                "ctime": 1561610576,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/2c6b47d111f503cbf27a04b92e29bae3017ba070.jpg",
+                "duration": 59746,
+                "stat": {
+                    "view": 3043632
+                },
+                "bvid": "BV1ux411d75J",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 73342655,
+                "title": "黑马程序员微信小程序开发前端教程_零基础玩转微信小程序",
+                "pubdate": 1571987053,
+                "ctime": 1571987053,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/5bfe3753cf7113e9121f4adc37e8ca996b763443.jpg",
+                "duration": 67870,
+                "stat": {
+                    "view": 3210670
+                },
+                "bvid": "BV1nE41117BQ",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 205494980,
+                "title": "黑马程序员前端React视频教程，react零基础入门原理详解到好客租房项目实战",
+                "pubdate": 1620348019,
+                "ctime": 1620348019,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/0bc761b8f97fa037aa1a427e1e0bb1d2bdb241bd.png",
+                "duration": 83447,
+                "stat": {
+                    "view": 411468
+                },
+                "bvid": "BV1gh411U7JD",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 75718460,
+                "title": "Git零基础入门到实战详解",
+                "pubdate": 1573783975,
+                "ctime": 1573783975,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/9b93fc0114eb649a382c22d6d4994a320fd3c8ff.jpg",
+                "duration": 9695,
+                "stat": {
+                    "view": 131303
+                },
+                "bvid": "BV1sJ411D7xN",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 15866060,
+                "title": "黑马程序员前端基础教程Ajax零基础入门_下部",
+                "pubdate": 1509349974,
+                "ctime": 1509349978,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/5043b7b0177f66511f288c843a73cbb9f522f620.png",
+                "duration": 29040,
+                "stat": {
+                    "view": 83191
+                },
+                "bvid": "BV15x411E7xH",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 37004568,
+                "title": "黑马程序员4天Node.js零基础入门教程",
+                "pubdate": 1543475864,
+                "ctime": 1543475864,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/b4a3e0701b4db84c678f4c1e97ea5be39fce1377.png",
+                "duration": 43921,
+                "stat": {
+                    "view": 85649
+                },
+                "bvid": "BV19t411Q768",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 371304916,
+                "title": "黑马程序员前端TypeScript教程，TypeScript零基础入门到实战全套教程",
+                "pubdate": 1594609827,
+                "ctime": 1594609828,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/2693ac52a51e2fe73555d5a3c3ff2a4b266f0201.jpg",
+                "duration": 42360,
+                "stat": {
+                    "view": 504641
+                },
+                "bvid": "BV14Z4y1u7pi",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 285004995,
+                "title": "前端开发利器vue，微信小程序快速开发实战，黑马程序员前端web教程",
+                "pubdate": 1585576132,
+                "ctime": 1585576132,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/b0fb26707d763c41bde632133c6bf89f09bf64c7.jpg",
+                "duration": 34246,
+                "stat": {
+                    "view": 176728
+                },
+                "bvid": "BV1Sc41187nZ",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 371591957,
+                "title": "用最流行的图表引擎ECharts来展示电商平台数据，是不是超级酷炫",
+                "pubdate": 1596104798,
+                "ctime": 1596104799,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/1af8c266665e2ffaa84147bf5bb24a73e216ad3e.jpg",
+                "duration": 61592,
+                "stat": {
+                    "view": 83382
+                },
+                "bvid": "BV1VZ4y1M7ZC",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 51518146,
+                "title": "最全面的Html5+css3教程，前端开发工程师进阶教程",
+                "pubdate": 1557035531,
+                "ctime": 1557035531,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/eaae69513f9a8439832126610e2d7d8788a4d5ab.jpg",
+                "duration": 70557,
+                "stat": {
+                    "view": 154601
+                },
+                "bvid": "BV1b4411i742",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 15241731,
+                "title": "黑马程序员前端Html5教程，前端必备基础",
+                "pubdate": 1507537275,
+                "ctime": 1507535160,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/61b6db24e4890692ff2f9c9843fbed70de6bf4b6.jpg",
+                "duration": 21252,
+                "stat": {
+                    "view": 200420
+                },
+                "bvid": "BV1rx411u7tv",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 40455083,
+                "title": "黑马程序员精品WEB前端课程_28节课快速玩转微信小程序",
+                "pubdate": 1547190325,
+                "ctime": 1547190325,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/f9154b80f849a7169f3edecd59430709c7998369.jpg",
+                "duration": 14369,
+                "stat": {
+                    "view": 592302
+                },
+                "bvid": "BV1Ct411p7bj",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 15269197,
+                "title": "黑马程序员前端CSS3基础教程，前端必备基础",
+                "pubdate": 1507625626,
+                "ctime": 1507625629,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/a2647bd723641dbcde485239abf40f41118b141a.jpg",
+                "duration": 89896,
+                "stat": {
+                    "view": 494182
+                },
+                "bvid": "BV1Bx411u7cS",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 17443414,
+                "title": "黑马程序员前端基础-彻底征服JavaScript（知识精讲+贪吃蛇等项目案例）",
+                "pubdate": 1513756033,
+                "ctime": 1513756034,
+                "state": 0,
+                "pic": "http://i1.hdslb.com/bfs/archive/d36514773cc8dc132df8952dfd3720d18f989955.jpg",
+                "duration": 112225,
+                "stat": {
+                    "view": 74857
+                },
+                "bvid": "BV1tW41187vH",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 15918475,
+                "title": "前端教程_百度外卖项目实战开发",
+                "pubdate": 1509517905,
+                "ctime": 1509517905,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/7e6507a8b8502aa20f73128c28e18c306a808d3a.jpg",
+                "duration": 31371,
+                "stat": {
+                    "view": 46554
+                },
+                "bvid": "BV1nx411E7Rh",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 22250399,
+                "title": "web前端基础必备教程-2小时玩转Vue单元测试",
+                "pubdate": 1524039349,
+                "ctime": 1524039350,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/9ecc6413da9bc9a929e32fb845142b40545dde81.jpg",
+                "duration": 6379,
+                "stat": {
+                    "view": 56828
+                },
+                "bvid": "BV18W411j725",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 16074356,
+                "title": "前端教程_18集搞定企业实战项目之PC专题页",
+                "pubdate": 1509948466,
+                "ctime": 1509948466,
+                "state": 0,
+                "pic": "http://i2.hdslb.com/bfs/archive/abac954fb050edf6a8c3851b0d81983d71f9f75a.jpg",
+                "duration": 11183,
+                "stat": {
+                    "view": 12909
+                },
+                "bvid": "BV1tx411j7xk",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            },
+            {
+                "aid": 31072906,
+                "title": "Web前端移动开发进阶教程-乐淘移动商城项目",
+                "pubdate": 1536039602,
+                "ctime": 1536039601,
+                "state": 0,
+                "pic": "http://i0.hdslb.com/bfs/archive/f16ba6d63a23e1bff206626043551ee1ad9df4e8.jpg",
+                "duration": 50203,
+                "stat": {
+                    "view": 65427
+                },
+                "bvid": "BV1nW411Z7kT",
+                "ugc_pay": 0,
+                "interactive_video": false,
+                "enable_vt": 0,
+                "vt_display": "",
+                "playback_position": 0
+            }
+]
